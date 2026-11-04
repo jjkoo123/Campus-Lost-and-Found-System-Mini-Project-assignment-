@@ -4,8 +4,11 @@
 1. Supabase → **SQL Editor** → paste and run `database/schema.sql`.
 2. Supabase → **Authentication → Providers → Email**: turn **Confirm email OFF** (so users can log in right after they register) and set **minimum password length to 8**.
 3. Paste your **Project URL** and **anon key** into `assets/js/supabase.js`.
-4. Open `index.html` with **Live Server**, register an account, then make it admin:
-   `update user_profile set role = 'Admin' where email = 'your@email.com';`
+4. Create the admin account (login uses the email):
+   - Supabase → **Authentication → Users → Add user → Create new user**
+   - Email `admin@tarc.edu.my`, password `00000000`, tick **Auto Confirm User**
+   - Run the `insert into user_profile ...` SQL at the bottom of `schema.sql` → profile with student ID `ADMIN`, role Admin
+   - Students register on `register.html` (student ID = `2` + 6 digits, e.g. `2412345`)
 5. For testing claims before Member C's pages exist, add one found item in SQL:
    ```sql
    insert into category(name) values ('Wallet');
@@ -34,7 +37,7 @@ Validation is in 2 places: JS (instant red/green messages) and DB (`CHECK`, `UNI
 | ID | Test | Input | Expected |
 |---|---|---|---|
 | TA01 | Register, empty fields | all blank | 6 red errors listed |
-| TA02 | Register, bad formats | email `abc`, ID `123`, phone `999` | format error for each |
+| TA02 | Register, bad formats | email `abc`, ID `123` or `ADMIN`, phone `999` | format error for each |
 | TA03 | Register, short password | `abc123` | "at least 8 characters" |
 | TA04 | Register, passwords differ | `password1` / `password2` | "Passwords do not match" |
 | TA05 | Register, duplicate email | existing email | "already registered" |

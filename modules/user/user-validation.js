@@ -3,7 +3,7 @@
 // The same rules are also in database/schema.sql as CHECK constraints.
 // =====================================================
 
-const STUDENT_ID_PATTERN = /^\d{2}[A-Z]{3}\d{5}$/;     // e.g. 24WMR12345
+const STUDENT_ID_PATTERN = /^2\d{6}$/;               // "2" + 6 digits, e.g. 2412345
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;   // something@something.something
 const PHONE_PATTERN = /^01\d-?\d{7,8}$/;              // Malaysian mobile, e.g. 012-3456789
 const MIN_PASSWORD = 8;
@@ -17,7 +17,7 @@ function validateName(name) {
 
 function validateStudentId(id) {
     if (id === "") return "Student ID is required.";
-    if (!STUDENT_ID_PATTERN.test(id)) return "Student ID must look like 24WMR12345.";
+    if (!STUDENT_ID_PATTERN.test(id)) return "Student ID must be 7 digits starting with 2 (e.g. 2412345).";
     return "";
 }
 

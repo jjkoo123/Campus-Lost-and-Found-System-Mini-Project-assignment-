@@ -25,9 +25,10 @@ create table user_profile (
     id          uuid primary key references auth.users(id) on delete cascade,
     user_no     bigint generated always as identity unique,   -- shown as U001
     name        text not null check (length(trim(name)) between 2 and 100),
-    student_id  text not null unique check (student_id ~ '^[0-9]{2}[A-Z]{3}[0-9]{5}$'),
+    -- students: "2" + 6 digits (e.g. 2412345); the admin account uses 'ADMIN'
+    student_id  text not null unique check (student_id ~ '^2[0-9]{6}$' or student_id = 'ADMIN'),
     email       text not null unique,
-    phone       text not null check (phone ~ '^01[0-9]-?[0-9]{7,8}$'),
+    phone       text check (phone ~ '^01[0-9]-?[0-9]{7,8}$'),   -- required on register form; admin may leave empty
     role        text not null default 'Student' check (role in ('Student', 'Admin')),
     status      text not null default 'Active'  check (status in ('Active', 'Inactive')),
     created_at  timestamptz not null default now()
@@ -52,11 +53,16 @@ $$;
 
 -- When someone signs up, copy the details they typed into user_profile.
 -- register.js sends name / student_id / phone as "user metadata".
+-- A user created in the Supabase dashboard (the admin) has no metadata,
+-- so no profile is made here - the admin profile is added by the SQL at the bottom.
 create or replace function handle_new_user()
 returns trigger
 language plpgsql security definer set search_path = public
 as $$
 begin
+    if new.raw_user_meta_data ->> 'student_id' is null then
+        return new;
+    end if;
     insert into user_profile (id, name, student_id, email, phone)
     values (
         new.id,
@@ -314,7 +320,12 @@ create policy "user deletes own notifications" on notification for delete to aut
 
 
 -- =====================================================================
--- AFTER RUNNING: make your first admin (change the email)
+-- AFTER RUNNING: create the admin account
 -- =====================================================================
--- 1. Register normally on register.html
--- 2. Run:  update user_profile set role = 'Admin' where email = 'admin@tarc.edu.my';
+-- 1. Supabase > Authentication > Users > Add user > Create new user
+--      Email: admin@tarc.edu.my    Password: 00000000    tick "Auto Confirm User"
+-- 2. Run this to give that login an Admin profile:
+insert into user_profile (id, name, student_id, email, role)
+select id, 'Admin', 'ADMIN', email, 'Admin'
+from auth.users
+where email = 'admin@tarc.edu.my';
