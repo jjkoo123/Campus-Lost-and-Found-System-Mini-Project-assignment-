@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Campus Lost & Found</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body data-root="">
+  <div id="navbar"></div>
+
+  <!-- A1 User / Account - CREATE -->
+  <main class="container">
+    <div class="card page-card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3">Create an Account</h1>
+        <div id="message"></div>
+
+        <form id="register-form" novalidate>
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name *</label>
+            <input type="text" class="form-control" id="name" maxlength="100">
+            <div class="invalid-feedback" id="name-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="student-id" class="form-label">Student ID *</label>
+            <input type="text" class="form-control text-uppercase" id="student-id" placeholder="e.g. 24WMR12345" maxlength="10">
+            <div class="form-text">Format: 2 digits + 3 letters + 5 digits</div>
+            <div class="invalid-feedback" id="student-id-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email *</label>
+            <input type="email" class="form-control" id="email" placeholder="name@student.tarc.edu.my">
+            <div class="invalid-feedback" id="email-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone *</label>
+            <input type="tel" class="form-control" id="phone" placeholder="e.g. 012-3456789">
+            <div class="invalid-feedback" id="phone-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password *</label>
+            <input type="password" class="form-control" id="password">
+            <div class="form-text">At least 8 characters</div>
+            <div class="invalid-feedback" id="password-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="form-label">Confirm Password *</label>
+            <input type="password" class="form-control" id="confirm-password">
+            <div class="invalid-feedback" id="confirm-password-error"></div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100" id="register-btn">Register</button>
+        </form>
+
+        <p class="mt-3 mb-0 text-center">Already registered? <a href="login.html">Login</a></p>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="assets/js/supabase.js"></script>
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/layout.js"></script>
+  <script src="modules/user/user-validation.js"></script>
+  <script src="modules/user/register.js"></script>
+</body>
+</html>

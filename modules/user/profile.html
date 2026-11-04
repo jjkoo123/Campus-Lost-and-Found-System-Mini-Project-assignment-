@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile | Campus Lost & Found</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../../assets/css/style.css" rel="stylesheet">
+</head>
+<body data-root="../../">
+  <div id="navbar"></div>
+
+  <!-- A1 User / Account - RETRIEVE own profile + UPDATE profile / password -->
+  <main class="container py-4" style="max-width: 720px;">
+    <h1 class="h3 mb-3">My Profile</h1>
+
+    <!-- View profile -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <table class="table table-borderless mb-0">
+          <tr><th style="width: 160px;">User ID</th><td id="view-user-no">-</td></tr>
+          <tr><th>Name</th><td id="view-name">-</td></tr>
+          <tr><th>Student ID</th><td id="view-student-id">-</td></tr>
+          <tr><th>Email</th><td id="view-email">-</td></tr>
+          <tr><th>Phone</th><td id="view-phone">-</td></tr>
+          <tr><th>Role</th><td id="view-role">-</td></tr>
+          <tr><th>Joined</th><td id="view-joined">-</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Edit profile -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="h5">Edit Profile</h2>
+        <p class="text-muted small">Student ID and email cannot be changed.</p>
+        <div id="profile-message"></div>
+        <form id="profile-form" novalidate>
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name *</label>
+            <input type="text" class="form-control" id="name" maxlength="100">
+            <div class="invalid-feedback" id="name-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone *</label>
+            <input type="tel" class="form-control" id="phone">
+            <div class="invalid-feedback" id="phone-error"></div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Change password -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Change Password</h2>
+        <div id="password-message"></div>
+        <form id="password-form" novalidate>
+          <div class="mb-3">
+            <label for="old-password" class="form-label">Current Password *</label>
+            <input type="password" class="form-control" id="old-password">
+            <div class="invalid-feedback" id="old-password-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="new-password" class="form-label">New Password *</label>
+            <input type="password" class="form-control" id="new-password">
+            <div class="form-text">At least 8 characters</div>
+            <div class="invalid-feedback" id="new-password-error"></div>
+          </div>
+          <div class="mb-3">
+            <label for="confirm-password" class="form-label">Confirm New Password *</label>
+            <input type="password" class="form-control" id="confirm-password">
+            <div class="invalid-feedback" id="confirm-password-error"></div>
+          </div>
+          <button type="submit" class="btn btn-warning">Change Password</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="../../assets/js/supabase.js"></script>
+  <script src="../../assets/js/utils.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+  <script src="user-validation.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

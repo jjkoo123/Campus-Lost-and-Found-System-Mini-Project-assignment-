@@ -1,0 +1,22 @@
+/* Shared styles - keep small, Bootstrap does most of the work */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex: 1;
+}
+
+.page-card {
+    max-width: 560px;
+    margin: 40px auto;
+}
+
+/* Claim proof check: the two columns admin compares */
+.compare-box {
+    white-space: pre-wrap;
+    min-height: 120px;
+}
