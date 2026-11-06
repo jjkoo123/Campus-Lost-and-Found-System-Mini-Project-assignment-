@@ -86,7 +86,7 @@ function renderNavbar(profile) {
     document.getElementById("navbar").innerHTML = `
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-          <a class="navbar-brand fw-bold" href="${ROOT}index.html">🎒 Campus Lost &amp; Found</a>
+          <a class="navbar-brand fw-bold" href="${ROOT}index.html">🎒 LostLink</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -109,6 +109,6 @@ function renderNavbar(profile) {
 function renderFooter() {
     document.getElementById("footer").innerHTML = `
       <footer class="bg-light border-top mt-5 py-3 text-center text-muted small">
-        Campus Lost &amp; Found System &copy; 2026 · AMCS2194 Mini Project · TAR UMT
+        LostLink – Lost and Found Management System &copy; 2026 · AMCS2194 Mini Project
       </footer>`;
 }

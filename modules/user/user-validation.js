@@ -23,7 +23,7 @@ function validateStudentId(id) {
 
 function validateEmail(email) {
     if (email === "") return "Email is required.";
-    if (!EMAIL_PATTERN.test(email)) return "Email format is invalid (e.g. name@student.tarc.edu.my).";
+    if (!EMAIL_PATTERN.test(email)) return "Email format is invalid (e.g. name@student.edu.my).";
     return "";
 }
 

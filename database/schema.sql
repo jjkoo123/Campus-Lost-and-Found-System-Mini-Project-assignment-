@@ -1,5 +1,5 @@
 -- =====================================================================
--- Campus Lost & Found System - Database Schema (Supabase / PostgreSQL)
+-- LostLink (Lost and Found Management System) - Database Schema (Supabase / PostgreSQL)
 -- Run this whole file once in: Supabase Dashboard > SQL Editor > New query
 --
 -- Sections:
