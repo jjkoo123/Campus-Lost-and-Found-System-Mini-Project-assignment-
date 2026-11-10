@@ -20,12 +20,14 @@ const NAV_LINKS = {
     Student: [
         { text: "Home", href: "index.html" },
         { text: "My Claims", href: "modules/claim/my-claims.html" },
+        { text: "Chat", href: "modules/chat/chat.html" },
         { text: "My Profile", href: "modules/user/profile.html" }
     ],
     Admin: [
         { text: "Home", href: "index.html" },
         { text: "Claims", href: "modules/claim/admin-claims.html" },
         { text: "Users", href: "modules/user/admin-users.html" },
+        { text: "Chat", href: "modules/chat/chat.html" },
         { text: "My Profile", href: "modules/user/profile.html" }
     ]
 };

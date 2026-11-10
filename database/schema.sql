@@ -329,3 +329,51 @@ insert into user_profile (id, name, student_id, email, role)
 select id, 'Admin', 'ADMIN', email, 'Admin'
 from auth.users
 where email = 'admin@tarc.edu.my';
+
+
+-- =====================================================================
+-- 7. CHAT  (live chat between each student and the admin)
+--    Already ran the file above? Run ONLY this section in the SQL Editor.
+-- =====================================================================
+create table chat_message (
+    id          bigint generated always as identity primary key,
+    student_id  uuid not null references user_profile(id) on delete cascade,  -- whose conversation
+    sender_id   uuid not null references user_profile(id) on delete cascade,  -- who wrote it
+    message     text not null check (length(trim(message)) between 1 and 500),
+    is_edited   boolean not null default false,
+    created_at  timestamptz not null default now(),
+    updated_at  timestamptz
+);
+
+-- On edit: mark as edited, and do not allow moving a message to another chat
+create or replace function check_chat_update()
+returns trigger
+language plpgsql
+as $$
+begin
+    if new.student_id <> old.student_id or new.sender_id <> old.sender_id then
+        raise exception 'You cannot move a message to another chat.';
+    end if;
+    new.is_edited := true;
+    new.updated_at := now();
+    return new;
+end;
+$$;
+
+create trigger chat_update_rules
+    before update on chat_message
+    for each row execute function check_chat_update();
+
+alter table chat_message enable row level security;
+
+create policy "student reads own chat, admin reads all" on chat_message for select to authenticated
+    using (student_id = auth.uid() or is_admin());
+create policy "send message" on chat_message for insert to authenticated
+    with check (sender_id = auth.uid() and (student_id = auth.uid() or is_admin()));
+create policy "edit own message" on chat_message for update to authenticated
+    using (sender_id = auth.uid()) with check (sender_id = auth.uid());
+create policy "delete own message" on chat_message for delete to authenticated
+    using (sender_id = auth.uid());
+
+-- Live updates: Supabase Realtime sends new / edited / deleted messages to the browser
+alter publication supabase_realtime add table chat_message;
