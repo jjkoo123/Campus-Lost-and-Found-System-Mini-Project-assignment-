@@ -5,7 +5,7 @@
 
 const STUDENT_ID_PATTERN = /^2\d{6}$/;               // "2" + 6 digits, e.g. 2412345
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;   // something@something.something
-const PHONE_PATTERN = /^01\d-?\d{7,8}$/;              // Malaysian mobile, e.g. 012-3456789
+const PHONE_PATTERN = /^(\+?6)?01\d-?\d{7,8}$/;    // Malaysian mobile: 012-3456789, 0123456789 or +60123456789
 const MIN_PASSWORD = 8;
 
 // Each function returns an error message, or "" if the value is OK.
@@ -29,7 +29,7 @@ function validateEmail(email) {
 
 function validatePhone(phone) {
     if (phone === "") return "Phone number is required.";
-    if (!PHONE_PATTERN.test(phone)) return "Phone must be a Malaysian mobile number, e.g. 012-3456789.";
+    if (!PHONE_PATTERN.test(phone)) return "Phone must be a Malaysian mobile number, e.g. 012-3456789 or +60123456789.";
     return "";
 }
 

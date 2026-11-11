@@ -28,7 +28,7 @@ create table user_profile (
     -- students: "2" + 6 digits (e.g. 2412345); the admin account uses 'ADMIN'
     student_id  text not null unique check (student_id ~ '^2[0-9]{6}$' or student_id = 'ADMIN'),
     email       text not null unique,
-    phone       text check (phone ~ '^01[0-9]-?[0-9]{7,8}$'),   -- required on register form; admin may leave empty
+    phone       text check (phone ~ '^(\+?6)?01[0-9]-?[0-9]{7,8}$'),   -- required on register form; admin may leave empty
     role        text not null default 'Student' check (role in ('Student', 'Admin')),
     status      text not null default 'Active'  check (status in ('Active', 'Inactive')),
     created_at  timestamptz not null default now()
