@@ -28,7 +28,7 @@ create table user_profile (
     -- students: "2" + 6 digits (e.g. 2412345); the admin account uses 'ADMIN'
     student_id  text not null unique check (student_id ~ '^2[0-9]{6}$' or student_id = 'ADMIN'),
     email       text not null unique,
-    phone       text check (phone ~ '^01[0-9]-?[0-9]{7,8}$'),   -- required on register form; admin may leave empty
+    phone       text check (phone ~ '^(\+?6)?01[0-9]-?[0-9]{7,8}$'),   -- required on register form; admin may leave empty
     role        text not null default 'Student' check (role in ('Student', 'Admin')),
     status      text not null default 'Active'  check (status in ('Active', 'Inactive')),
     created_at  timestamptz not null default now()
@@ -97,6 +97,16 @@ begin
 end;
 $$;
 grant execute on function check_registration(text, text) to anon, authenticated;
+
+-- Login with student ID: the login page asks for the email that belongs to an ID
+-- (Supabase Auth itself only signs in with an email). Returns null if not found.
+create or replace function get_login_email(p_student_id text)
+returns text
+language sql stable security definer set search_path = public
+as $$
+    select email from user_profile where student_id = upper(trim(p_student_id));
+$$;
+grant execute on function get_login_email(text) to anon, authenticated;
 
 -- Admin deactivates / reactivates a user (A1 Delete = soft delete).
 -- Soft delete keeps the user's claim history. Admin cannot do it to himself.
