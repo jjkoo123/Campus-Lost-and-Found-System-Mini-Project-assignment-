@@ -1,5 +1,5 @@
 // =====================================================
-// Shared layout ("master page"): navbar + footer for every page.
+// Shared layout ("master page"): sidebar + top bar + footer for every page.
 //
 // How to use on a page:
 //   1. <body data-root="../../">   (path back to the project root; "" for root pages)
@@ -12,23 +12,36 @@
 
 const ROOT = document.body.dataset.root || "";
 
-// Links shown in the navbar for each role. Teammates: add your pages here.
+// Fonts and icons used by the layout (loaded once here, so pages do not need extra <link> tags)
+function addStylesheet(href) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    document.head.appendChild(link);
+}
+addStylesheet("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700&display=swap");
+addStylesheet("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+// Links shown in the sidebar for each role. Teammates: add your pages here.
+// icon = a Bootstrap Icons name (https://icons.getbootstrap.com)
 const NAV_LINKS = {
     guest: [
-        { text: "Home", href: "index.html" }
+        { text: "Home", href: "index.html", icon: "house" },
+        { text: "Login", href: "login.html", icon: "box-arrow-in-right" },
+        { text: "Register", href: "register.html", icon: "person-plus" }
     ],
     Student: [
-        { text: "Home", href: "index.html" },
-        { text: "My Claims", href: "modules/claim/my-claims.html" },
-        { text: "Chat", href: "modules/chat/chat.html" },
-        { text: "My Profile", href: "modules/user/profile.html" }
+        { text: "Dashboard", href: "index.html", icon: "house" },
+        { text: "My Claims", href: "modules/claim/my-claims.html", icon: "patch-check" },
+        { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
     ],
     Admin: [
-        { text: "Home", href: "index.html" },
-        { text: "Claims", href: "modules/claim/admin-claims.html" },
-        { text: "Users", href: "modules/user/admin-users.html" },
-        { text: "Chat", href: "modules/chat/chat.html" },
-        { text: "My Profile", href: "modules/user/profile.html" }
+        { text: "Dashboard", href: "index.html", icon: "house" },
+        { text: "Claims", href: "modules/claim/admin-claims.html", icon: "clipboard-check" },
+        { text: "Users", href: "modules/user/admin-users.html", icon: "people" },
+        { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
     ]
 };
 
@@ -68,36 +81,65 @@ async function initLayout(access) {
     return profile;
 }
 
+// "Ali bin Ahmad" -> "AB"
+function initials(name) {
+    const parts = name.trim().split(/\s+/);
+    return (parts[0][0] + (parts.length > 1 ? parts[1][0] : "")).toUpperCase();
+}
+
+// Sidebar (left) + top bar. On phones the sidebar slides in from the menu button.
 function renderNavbar(profile) {
     const links = profile ? NAV_LINKS[profile.role] : NAV_LINKS.guest;
     const current = window.location.pathname;
+    const onHome = current.endsWith("/");   // opening the folder shows index.html
 
     const linkHtml = links.map(l => {
-        const active = current.endsWith(l.href) ? " active" : "";
-        return "<li class='nav-item'><a class='nav-link" + active + "' href='" +
-            ROOT + l.href + "'>" + l.text + "</a></li>";
+        const active = current.endsWith(l.href) || (onHome && l.href === "index.html") ? " active" : "";
+        return "<a class='ll-nav-link" + active + "' href='" + ROOT + l.href + "'>" +
+            "<i class='bi bi-" + (l.icon || "circle") + "'></i><span>" + l.text + "</span></a>";
     }).join("");
 
     const rightHtml = profile
-        ? "<span class='navbar-text me-3'>👤 " + escapeHtml(profile.name) +
-          " <span class='badge bg-light text-dark'>" + profile.role + "</span></span>" +
-          "<button class='btn btn-outline-light btn-sm' id='logout-btn'>Logout</button>"
-        : "<a class='btn btn-outline-light btn-sm me-2' href='" + ROOT + "login.html'>Login</a>" +
-          "<a class='btn btn-light btn-sm' href='" + ROOT + "register.html'>Register</a>";
+        ? "<div class='text-end d-none d-sm-block'>" +
+            "<div class='ll-user-name'>" + escapeHtml(profile.name) + "</div>" +
+            "<div class='ll-user-id'>" + profile.role + " · ID " + escapeHtml(profile.student_id) + "</div>" +
+          "</div>" +
+          "<div class='ll-avatar'>" + escapeHtml(initials(profile.name)) + "</div>" +
+          "<button class='btn btn-outline-primary btn-sm' id='logout-btn'>Logout</button>"
+        : "<a class='btn btn-outline-primary btn-sm' href='" + ROOT + "login.html'>Login</a>" +
+          "<a class='btn btn-primary btn-sm' href='" + ROOT + "register.html'>Register</a>";
 
+    document.body.classList.add("ll-has-sidebar");
     document.getElementById("navbar").innerHTML = `
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-          <a class="navbar-brand fw-bold" href="${ROOT}index.html">🎒 LostLink</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav me-auto">${linkHtml}</ul>
-            <div class="d-flex align-items-center">${rightHtml}</div>
+      <aside class="ll-sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="llSidebar" aria-label="Main menu">
+        <div class="ll-sidebar-inner">
+          <a class="ll-brand" href="${ROOT}index.html">
+            <span class="ll-brand-icon"><i class="bi bi-search-heart"></i></span>
+            <span>LostLink</span>
+          </a>
+          <nav class="ll-nav">${linkHtml}</nav>
+          <div class="ll-sidebar-note">
+            <div class="ll-sidebar-note-title"><span class="ll-dot"></span>${profile ? profile.role + " account" : "Guest"}</div>
+            <div>Lost and Found Management System</div>
           </div>
         </div>
-      </nav>`;
+      </aside>
+      <header class="ll-topbar">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn ll-menu-btn d-lg-none" type="button" data-bs-toggle="offcanvas"
+                  data-bs-target="#llSidebar" aria-controls="llSidebar" aria-label="Open menu">
+            <i class="bi bi-list"></i>
+          </button>
+          <a class="ll-topbar-brand" href="${ROOT}index.html">
+            <span class="ll-topbar-icon"><i class="bi bi-arrow-repeat"></i></span>
+            <span>
+              <span class="ll-topbar-title">LostLink</span>
+              <span class="ll-topbar-sub">Campus Lost &amp; Found</span>
+            </span>
+          </a>
+        </div>
+        <div class="d-flex align-items-center gap-2 gap-sm-3">${rightHtml}</div>
+      </header>`;
 
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
@@ -110,7 +152,7 @@ function renderNavbar(profile) {
 
 function renderFooter() {
     document.getElementById("footer").innerHTML = `
-      <footer class="bg-light border-top mt-5 py-3 text-center text-muted small">
+      <footer class="ll-footer">
         LostLink – Lost and Found Management System &copy; 2026 · AMCS2194 Mini Project
       </footer>`;
 }

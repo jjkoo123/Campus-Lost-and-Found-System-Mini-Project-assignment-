@@ -11,9 +11,13 @@
   <div id="navbar"></div>
 
   <main class="container py-4">
-    <!-- Shared home page: team to add search, latest found items, quick stats -->
-    <h1 class="h3">Welcome to LostLink</h1>
-    <p id="welcome" class="text-muted">Lost something on campus? Report it or browse found items.</p>
+    <!-- Shared home page: team to add search and latest found items -->
+    <span class="ll-hero-tag">Campus Lost &amp; Found Desk</span>
+    <h1 class="display-6 mt-2 mb-2">Reuniting Students with their Valuables</h1>
+    <p id="welcome" class="text-muted mb-4">Lost something on campus? Log in to claim found items and chat with the security office.</p>
+
+    <!-- Quick links: filled in by the script below, depending on who is logged in -->
+    <div class="row g-3" id="quick-links"></div>
   </main>
 
   <div id="footer"></div>
@@ -24,11 +28,35 @@
   <script src="assets/js/utils.js"></script>
   <script src="assets/js/layout.js"></script>
   <script>
+    // Quick-link cards for each role. Teammates: add your pages here.
+    const QUICK_LINKS = {
+      guest: [
+        { title: "Login", text: "Sign in to claim items and chat with the security office.", href: "login.html", icon: "box-arrow-in-right", style: "navy" },
+        { title: "Create an Account", text: "New here? Register with your student ID.", href: "register.html", icon: "person-plus", style: "amber" }
+      ],
+      Student: [
+        { title: "My Claims", text: "Claim a found item and track your claim status.", href: "modules/claim/my-claims.html", icon: "patch-check", style: "navy" },
+        { title: "Chat with Security Office", text: "Ask the admin about a lost or found item.", href: "modules/chat/chat.html", icon: "chat-dots", style: "amber" },
+        { title: "My Profile", text: "Update your details or change your password.", href: "modules/user/profile.html", icon: "person", style: "" }
+      ],
+      Admin: [
+        { title: "Review Claims", text: "Compare each claimant's proof with the hidden detail.", href: "modules/claim/admin-claims.html", icon: "clipboard-check", style: "navy" },
+        { title: "Chat with Students", text: "Reply to students' messages.", href: "modules/chat/chat.html", icon: "chat-dots", style: "amber" },
+        { title: "Manage Users", text: "Search, deactivate or reactivate accounts.", href: "modules/user/admin-users.html", icon: "people", style: "" }
+      ]
+    };
+
     (async () => {
       const me = await initLayout(null);   // public page
       if (me) {
         document.getElementById("welcome").textContent = "Hello, " + me.name + "! You are logged in as " + me.role + ".";
       }
+      const links = QUICK_LINKS[me ? me.role : "guest"];
+      document.getElementById("quick-links").innerHTML = links.map(l =>
+        "<div class='col-md-6 col-xl-4'><a class='ll-action-card " + l.style + "' href='" + l.href + "'>" +
+        "<i class='bi bi-" + l.icon + "'></i>" +
+        "<div class='ll-action-title'>" + l.title + "</div>" +
+        "<div class='small'>" + l.text + "</div></a></div>").join("");
     })();
   </script>
 </body>
