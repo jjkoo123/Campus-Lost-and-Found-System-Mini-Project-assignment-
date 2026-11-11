@@ -85,6 +85,16 @@ end;
 $$;
 grant execute on function set_user_status(uuid, text) to authenticated;
 
+-- Login with student ID: the login page asks for the email that belongs to an ID
+-- (Supabase Auth itself only signs in with an email). Returns null if not found.
+create or replace function get_login_email(p_student_id text)
+returns text
+language sql stable security definer set search_path = public
+as $$
+    select email from user_profile where student_id = upper(trim(p_student_id));
+$$;
+grant execute on function get_login_email(text) to anon, authenticated;
+
 -- 4. Chat table (skipped if it already exists)
 create table if not exists chat_message (
     id          bigint generated always as identity primary key,
