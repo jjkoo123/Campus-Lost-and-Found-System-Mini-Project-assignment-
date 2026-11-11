@@ -27,9 +27,8 @@ function formatDateTime(value) {
 async function loadMessages() {
     if (!currentStudentId) return;
 
-    // sender:user_profile!sender_id(...) = join to get the sender's name and role
     const { data, error } = await sb.from("chat_message")
-        .select("*, sender:user_profile!sender_id(name, role)")
+        .select("*")
         .eq("student_id", currentStudentId)
         .order("created_at", { ascending: true });
 
@@ -43,7 +42,11 @@ async function loadMessages() {
 
     list.innerHTML = data.map(m => {
         const mine = m.sender_id === me.id;
-        const who = m.sender.role === "Admin" ? "Security Office" : m.sender.name;
+        // A message is from the student if the sender is the student who owns this chat;
+        // otherwise it was written by the admin. (A student cannot read the admin's
+        // profile because of RLS, so we do not look up the sender's name.)
+        const fromStudent = m.sender_id === m.student_id;
+        const who = fromStudent ? studentName() : "Security Office";
         const actions = mine
             ? " · <a href='#' class='edit-link' data-id='" + m.id + "'>Edit</a>" +
               " · <a href='#' class='delete-link text-danger' data-id='" + m.id + "'>Delete</a>"
@@ -59,6 +62,13 @@ async function loadMessages() {
     }).join("");
 
     list.scrollTop = list.scrollHeight;   // jump to newest message
+}
+
+// Name of the student whose conversation is open
+function studentName() {
+    if (me.role === "Student") return me.name;
+    const s = students.find(x => x.id === currentStudentId);
+    return s ? s.name : "Student";
 }
 
 // ---------- Admin: list of students ----------

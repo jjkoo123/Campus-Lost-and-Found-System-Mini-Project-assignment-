@@ -13,10 +13,14 @@
   <!-- A2 Claim Verification - CREATE (new claim) and UPDATE (edit pending claim)
        New claim:  claim-form.html?item=FOUND_ITEM_ID   (link from Found Item detail page)
        Edit claim: claim-form.html?id=CLAIM_ID          (link from My Claims) -->
-  <main class="container py-4" style="max-width: 760px;">
+  <main class="container py-4">
     <h1 class="h3 mb-3" id="page-title">Claim a Found Item</h1>
     <div id="message"></div>
 
+    <div class="row g-4">
+    <div class="col-lg-8">
+    <div class="card"><div class="card-body p-4">
+    <div class="ll-eyebrow">Proof of ownership</div>
     <form id="claim-form" novalidate>
       <!-- Shown only when no item was passed in the URL -->
       <div class="mb-3 d-none" id="item-select-group">
@@ -70,6 +74,25 @@
         <a href="my-claims.html" class="btn btn-outline-secondary">Back to My Claims</a>
       </div>
     </form>
+    </div></div>
+    </div>
+
+    <!-- Help panel -->
+    <div class="col-lg-4">
+      <div class="card mb-3"><div class="card-body">
+        <h2 class="h6"><i class="bi bi-shield-check text-emerald"></i> How your claim is checked</h2>
+        <ol class="small ps-3 mb-0">
+          <li class="mb-2">You describe the item and a special mark only the owner would know.</li>
+          <li class="mb-2">The admin compares your answer with the item's hidden detail.</li>
+          <li>If it matches, the claim is approved and you collect the item with your student card.</li>
+        </ol>
+      </div></div>
+      <div class="card"><div class="card-body d-flex align-items-center gap-3">
+        <div class="flex-fill"><div class="fw-bold">Need help?</div><div class="small text-muted">Ask the Security Office about this item.</div></div>
+        <a class="btn btn-outline-primary btn-sm" href="../chat/chat.html"><i class="bi bi-chat-dots"></i> Chat</a>
+      </div></div>
+    </div>
+    </div>
   </main>
 
   <div id="footer"></div>

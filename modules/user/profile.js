@@ -10,12 +10,10 @@ async function loadProfile() {
     if (!me) return;
 
     // Show profile details
+    showProfileHead(me);
     document.getElementById("view-user-no").textContent = displayId("U", me.user_no);
-    document.getElementById("view-name").textContent = me.name;
     document.getElementById("view-student-id").textContent = me.student_id;
-    document.getElementById("view-email").textContent = me.email;
     document.getElementById("view-phone").textContent = me.phone;
-    document.getElementById("view-role").textContent = me.role;
     document.getElementById("view-joined").textContent = formatDate(me.created_at);
 
     // Fill the edit form with current values

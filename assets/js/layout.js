@@ -87,6 +87,26 @@ function initials(name) {
     return (parts[0][0] + (parts.length > 1 ? parts[1][0] : "")).toUpperCase();
 }
 
+// "Dashboard > My Claims" line under the top bar (not shown on the home page)
+function breadcrumbHtml(links, current, onHome) {
+    if (onHome || current.endsWith("index.html")) return "";
+    const active = links.find(l => current.endsWith(l.href));
+    const pageName = active ? active.text : document.title.split(" | ")[0];
+    return "<div class='ll-breadcrumb'><i class='bi bi-house'></i> " +
+        "<a href='" + ROOT + "index.html'>Dashboard</a> <i class='bi bi-chevron-right'></i> " +
+        "<b>" + escapeHtml(pageName) + "</b></div>";
+}
+
+// Header card "avatar + name + ID" used at the top of My Claims and My Profile.
+// The page needs elements with ids: head-avatar, head-name, head-role, head-info
+function showProfileHead(profile) {
+    document.getElementById("head-avatar").textContent = initials(profile.name);
+    document.getElementById("head-name").textContent = profile.name;
+    document.getElementById("head-role").textContent = profile.role;
+    document.getElementById("head-info").textContent =
+        "Student ID " + profile.student_id + " · " + profile.email;
+}
+
 // Sidebar (left) + top bar. On phones the sidebar slides in from the menu button.
 function renderNavbar(profile) {
     const links = profile ? NAV_LINKS[profile.role] : NAV_LINKS.guest;
@@ -139,7 +159,8 @@ function renderNavbar(profile) {
           </a>
         </div>
         <div class="d-flex align-items-center gap-2 gap-sm-3">${rightHtml}</div>
-      </header>`;
+      </header>
+      ${breadcrumbHtml(links, current, onHome)}`;
 
     const logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {

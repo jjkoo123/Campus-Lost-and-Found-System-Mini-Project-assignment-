@@ -11,22 +11,21 @@
   <div id="navbar"></div>
 
   <!-- A1 User / Account - RETRIEVE own profile + UPDATE profile / password -->
-  <main class="container py-4" style="max-width: 720px;">
-    <h1 class="h3 mb-3">My Profile</h1>
-
+  <main class="container py-4" style="max-width: 860px;">
     <!-- View profile -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body">
-        <table class="table table-borderless mb-0">
-          <tr><th style="width: 160px;">User ID</th><td id="view-user-no">-</td></tr>
-          <tr><th>Name</th><td id="view-name">-</td></tr>
-          <tr><th>Student ID</th><td id="view-student-id">-</td></tr>
-          <tr><th>Email</th><td id="view-email">-</td></tr>
-          <tr><th>Phone</th><td id="view-phone">-</td></tr>
-          <tr><th>Role</th><td id="view-role">-</td></tr>
-          <tr><th>Joined</th><td id="view-joined">-</td></tr>
-        </table>
+    <div class="ll-profile-head mb-3">
+      <div class="ll-avatar-lg" id="head-avatar"></div>
+      <div class="flex-fill">
+        <h1 class="h4 mb-1"><span id="head-name">My Profile</span> <span class="ll-chip ll-chip-blue" id="head-role"></span></h1>
+        <div class="small text-muted" id="head-info"></div>
       </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="ll-stat"><div class="ll-stat-label">User ID</div><div class="ll-stat-value" id="view-user-no">-</div></div></div>
+      <div class="col-6 col-md-3"><div class="ll-stat"><div class="ll-stat-label">Student ID</div><div class="ll-stat-value" id="view-student-id">-</div></div></div>
+      <div class="col-6 col-md-3"><div class="ll-stat"><div class="ll-stat-label">Phone</div><div class="ll-stat-value" id="view-phone">-</div></div></div>
+      <div class="col-6 col-md-3"><div class="ll-stat"><div class="ll-stat-label">Joined</div><div class="ll-stat-value" id="view-joined">-</div></div></div>
     </div>
 
     <!-- Edit profile -->

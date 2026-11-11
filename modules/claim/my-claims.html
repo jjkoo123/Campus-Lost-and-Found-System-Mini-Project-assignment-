@@ -12,23 +12,40 @@
 
   <!-- A2 Claim Verification - RETRIEVE (own claims) and DELETE (cancel pending claim) -->
   <main class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h1 class="h3 mb-0">My Claims</h1>
-      <a href="claim-form.html" class="btn btn-primary">+ New Claim</a>
+    <!-- Who is logged in -->
+    <div class="ll-profile-head mb-3">
+      <div class="ll-avatar-lg" id="head-avatar"></div>
+      <div class="flex-fill">
+        <h1 class="h4 mb-1"><span id="head-name">My Claims</span> <span class="ll-chip ll-chip-blue" id="head-role"></span></h1>
+        <div class="small text-muted" id="head-info"></div>
+      </div>
+      <a href="claim-form.html" class="btn btn-primary"><i class="bi bi-plus-circle"></i> New Claim</a>
     </div>
+
     <div id="message"></div>
 
-    <div class="table-responsive">
-      <table class="table table-hover bg-white shadow-sm align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Claim ID</th><th>Item</th><th>My Proof</th><th>Submitted</th>
-            <th>Status</th><th>Admin Remark</th><th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="claim-table"></tbody>
-      </table>
+    <!-- Numbers at a glance -->
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-lg-3"><div class="ll-stat"><div class="ll-stat-label text-amber">Waiting</div>
+        <div class="ll-stat-value"><span id="stat-pending">0</span> Pending</div><div class="ll-stat-note">Admin is checking your proof</div></div></div>
+      <div class="col-6 col-lg-3"><div class="ll-stat"><div class="ll-stat-label text-emerald">Success</div>
+        <div class="ll-stat-value"><span id="stat-approved">0</span> Approved</div><div class="ll-stat-note">Collect at the Security Office</div></div></div>
+      <div class="col-6 col-lg-3"><div class="ll-stat"><div class="ll-stat-label text-danger">Not approved</div>
+        <div class="ll-stat-value"><span id="stat-rejected">0</span> Rejected</div><div class="ll-stat-note">See the admin's remark</div></div></div>
+      <div class="col-6 col-lg-3"><div class="ll-stat"><div class="ll-stat-label">All time</div>
+        <div class="ll-stat-value"><span id="stat-total">0</span> Claims</div><div class="ll-stat-note">Total claims you made</div></div></div>
     </div>
+
+    <!-- Filter by status -->
+    <div class="ll-tabs mb-3" id="status-tabs">
+      <button type="button" class="ll-tab active" data-status="">All Activity <span id="tab-all">0</span></button>
+      <button type="button" class="ll-tab" data-status="Pending">Pending <span id="tab-pending">0</span></button>
+      <button type="button" class="ll-tab" data-status="Approved">Approved <span id="tab-approved">0</span></button>
+      <button type="button" class="ll-tab" data-status="Rejected">Rejected <span id="tab-rejected">0</span></button>
+    </div>
+
+    <!-- One card per claim -->
+    <div id="claim-list"></div>
   </main>
 
   <div id="footer"></div>
