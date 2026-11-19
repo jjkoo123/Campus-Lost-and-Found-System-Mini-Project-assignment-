@@ -352,7 +352,7 @@ create table chat_message (
     message     text not null check (length(trim(message)) between 1 and 500),
     is_edited   boolean not null default false,
     created_at  timestamptz not null default now(),
-    updated_at  timestampt
+    updated_at  timestamptz
 );
 
 -- On edit: mark as edited, and do not allow moving a message to another chat
