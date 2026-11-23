@@ -20,15 +20,10 @@ async function loadNotifications() {
         .select("*")
         .order("created_at", { ascending: false });
 
-    if (me.role !== "Admin") {
-        query = query.or("user_id.eq." + me.id + ",user_id.is.null");
-    }
-
-    const { data, error } = await query;
-    if (error) {
-        showMessage("message", "error", friendlyError(error));
-        return;
-    }
+    const { data, error } = await sb.from("notification")
+        .select("*")
+        .or("user_id.eq." + me.id + ",user_id.is.null")
+        .order("created_at", { ascending: false });
 
     notifications = data;
     showCounts();
@@ -39,7 +34,7 @@ async function loadNotifications() {
 function showCounts() {
     const unreadPersonal = notifications.filter(n => n.user_id === me.id && !n.is_read).length;
     document.getElementById("tab-all").textContent = notifications.length;
-    document.getElementById("tab-unread").textContent = notifications.filter(n => !n.is_read).length;
+    document.getElementById("tab-unread").textContent = unreadPersonal;
     document.getElementById("tab-Match").textContent = notifications.filter(n => n.type === "Match").length;
     document.getElementById("tab-Claim").textContent = notifications.filter(n => n.type === "Claim").length;
     document.getElementById("tab-Announcement").textContent = notifications.filter(n => n.type === "Announcement").length;
@@ -52,7 +47,7 @@ function showCounts() {
 function showNotifications() {
     const shown = notifications.filter(n => {
         if (currentFilter === "all") return true;
-        if (currentFilter === "unread") return !n.is_read;
+        if (currentFilter === "unread") return n.user_id === me.id && !n.
         return n.type === currentFilter;
     });
 
@@ -65,7 +60,7 @@ function showNotifications() {
     list.innerHTML = shown.map(n => {
         const style = TYPE_STYLE[n.type] || TYPE_STYLE.General;
         const isMine = n.user_id === me.id;
-        const canDelete = isMine || me.role === "Admin";
+        const canDelete = isMine || (me.role === "Admin" && n.user_id === null);
         const unreadClass = !n.is_read ? "border-start border-4 border-primary bg-white" : "bg-light";
 
         const readBtn = isMine

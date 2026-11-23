@@ -251,11 +251,11 @@ form.addEventListener("submit", async (e) => {
                 .insert({ ...payload, user_id: me.id }).select().single();
             if (error) throw error;
 
-            const matches = await runAutoMatch(created);
+            const matches = await runAutoMatch(payload);
             const matchNote = matches > 0
-                ? " 🎉 " + matches + " possible match(es) found — check your Notifications!"
-                : "";
-            showMessage("message", "success", "Lost report submitted!" + matchNote + " Redirecting...");
+                ? " Report updated! " + matches + " possible match(es) found — check your Notifications!"
+                : "Report updated successfully!";
+            showMessage("message", "success", msg);
         }
 
         setTimeout(() => { window.location.href = "my-lost-reports.html"; }, 1800);

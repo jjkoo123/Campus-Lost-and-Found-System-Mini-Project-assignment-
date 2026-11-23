@@ -45,7 +45,8 @@ const NAV_LINKS = {
         { text: "Notifications", href: "modules/notification/notifications.html", icon: "bell"},
         { text: "Users", href: "modules/user/admin-users.html", icon: "people" },
         { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
-        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" },
+        { text: "Lost Reports", href: "modules/lost/admin-lost-reports.html", icon: "flag" }
     ]
 };
 
@@ -195,13 +196,16 @@ async function loadUnreadBadge(profile) {
     if (!profile) return;
     const { count } = await sb.from("notification")
         .select("id", { count: "exact", head: true })
-        .or("user_id.eq." + profile.id + ",user_id.is.null")
+        .eq("user_id", profile.id)
         .eq("is_read", false);
 
     const badge = document.getElementById("nav-unread-badge");
-    if (badge && count > 0) {
+    if (!badge) return;
+    if (count > 0) {
         badge.textContent = count > 99 ? "99+" : count;
         badge.classList.remove("d-none");
+    } else {
+        badge.classList.add("d-none");
     }
 }
 
