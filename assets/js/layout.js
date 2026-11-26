@@ -32,19 +32,24 @@ const NAV_LINKS = {
     ],
     Student: [
         { text: "Dashboard", href: "index.html", icon: "house" },
-        { text: "My Claims", href: "modules/claim/my-claims.html", icon: "patch-check" },
-        { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
-        { text: "My Profile", href: "modules/user/profile.html", icon: "person" },
         { text: "Found Items", href: "modules/found/items.html", icon: "box" },
+        { text: "Report Lost Item", href: "modules/lost/lost-form.html", icon: "exclamation-triangle" },
+        { text: "My Lost Reports", href: "modules/lost/my-lost-reports.html", icon: "flag" },
+        { text: "My Claims", href: "modules/claim/my-claims.html", icon: "patch-check" },
+        { text: "Notifications", href: "modules/notification/notifications.html", icon: "bell" },
+        { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
     ],
     Admin: [
         { text: "Dashboard", href: "index.html", icon: "house" },
+        { text: "Found Items", href: "modules/found/items.html", icon: "box" },
+        { text: "Lost Reports", href: "modules/lost/admin-lost-reports.html", icon: "flag" },
         { text: "Claims", href: "modules/claim/admin-claims.html", icon: "clipboard-check" },
         { text: "Users", href: "modules/user/admin-users.html", icon: "people" },
+        { text: "Categories & Locations", href: "modules/location/locations.html", icon: "geo-alt" },
+        { text: "Notifications", href: "modules/notification/notifications.html", icon: "bell" },
         { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
-        { text: "My Profile", href: "modules/user/profile.html", icon: "person" },
-        { text: "Found Items", href: "modules/found/items.html", icon: "box" },
-        { text: "Categories & Locations", href: "modules/location/locations.html", icon: "geo-alt" }
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
     ]
 };
 
@@ -80,6 +85,7 @@ async function initLayout(access) {
 
     // 3. Draw navbar + footer
     renderNavbar(profile);
+    loadUnreadBadge(profile)
     renderFooter();
     return profile;
 }
@@ -122,8 +128,17 @@ function renderNavbar(profile) {
             "<i class='bi bi-" + (l.icon || "circle") + "'></i><span>" + l.text + "</span></a>";
     }).join("");
 
+    const bellHtml =
+        "<a href='" + ROOT + "modules/notification/notifications.html' " +
+        "class='btn btn-light btn-sm position-relative border' aria-label='Notifications'>" +
+        "<i class='bi bi-bell'></i>" +
+        "<span id='nav-unread-badge' class='position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark d-none'>0</span>" +
+        "</a>";
+
     const rightHtml = profile
-        ? "<div class='text-end d-none d-sm-block'>" +
+        
+        ? bellHtml +
+         "<div class='text-end d-none d-sm-block'>" +
             "<div class='ll-user-name'>" + escapeHtml(profile.name) + "</div>" +
             "<div class='ll-user-id'>" + profile.role + " · ID " + escapeHtml(profile.student_id) + "</div>" +
           "</div>" +
@@ -180,3 +195,20 @@ function renderFooter() {
         LostLink – Lost and Found Management System &copy; 2026 · AMCS2194 Mini Project
       </footer>`;
 }
+async function loadUnreadBadge(profile) {
+    if (!profile) return;
+    const { count } = await sb.from("notification")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", profile.id)
+        .eq("is_read", false);
+
+    const badge = document.getElementById("nav-unread-badge");
+    if (!badge) return;
+    if (count > 0) {
+        badge.textContent = count > 99 ? "99+" : count;
+        badge.classList.remove("d-none");
+    } else {
+        badge.classList.add("d-none");
+    }
+}
+
