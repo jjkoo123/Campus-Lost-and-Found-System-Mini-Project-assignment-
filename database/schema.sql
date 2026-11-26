@@ -150,13 +150,16 @@ grant update (name, phone) on user_profile to authenticated;
 create table category (
     id          bigint generated always as identity primary key,
     name        text not null unique check (length(trim(name)) > 0),
+    description text,                                   -- optional
     created_at  timestamptz not null default now()
 );
 
 create table location (
     id          bigint generated always as identity primary key,
     name        text not null unique check (length(trim(name)) > 0),
-    created_at  timestamptz not null default now()
+    created_at  timestamptz not null default now(),
+    latitude    double precision,                       -- optional, for the map
+    longitude   double precision
 );
 
 alter table category enable row level security;
@@ -207,6 +210,15 @@ create policy "admin manages found items" on found_item for all to authenticated
 
 create policy "admin only - secret details" on found_item_secret for all to authenticated
     using (is_admin()) with check (is_admin());
+
+-- Students can also turn in a found item (add only, always "Available").
+-- Editing and deleting stay admin only (policy above).
+create policy "student turns in found item" on found_item for insert to authenticated
+    with check (created_by = auth.uid() and status = 'Available');
+-- The finder may add the secret detail for the item they just turned in (cannot read it back).
+create policy "finder adds secret for own item" on found_item_secret for insert to authenticated
+    with check (exists (select 1 from found_item f
+                        where f.id = found_item_id and f.created_by = auth.uid()));
 
 
 -- =====================================================================

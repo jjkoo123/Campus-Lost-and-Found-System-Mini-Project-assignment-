@@ -3,9 +3,11 @@ let map = null;
 let markerLayer = null;
 let clickMarker = null;
 
+// type: "danger" or "success"; shown in the #message box at the top of the page
 function notify(type, message) {
-  if (typeof showMessage === "function") {
-    showMessage(type, message);
+  if (typeof showMessage === "function" && document.getElementById("message")) {
+    showMessage("message", type === "danger" ? "error" : "success", message);
+    window.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
   if (type === "danger") {

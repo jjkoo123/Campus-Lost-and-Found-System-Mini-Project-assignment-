@@ -47,7 +47,7 @@
     <div id="items" class="row g-3"></div>
   </main>
 
-  <!-- Add / Edit modal (admin) -->
+  <!-- Add modal (students and admin) / Edit modal (admin only) -->
   <div class="modal fade" id="itemModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -57,6 +57,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body row g-3">
+            <div class="col-12" id="formMsg"></div>
             <input type="hidden" id="itemId">
             <div class="col-md-6">
               <label class="form-label">Item name *</label>
@@ -78,7 +79,7 @@
               <label class="form-label">Storage place *</label>
               <input id="itemStorage" class="form-control" placeholder="e.g. Security office" maxlength="100">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" id="statusGroup">
               <label class="form-label">Status</label>
               <select id="itemStatus" class="form-select">
                 <option>Available</option>
@@ -91,7 +92,7 @@
               <textarea id="itemDesc" class="form-control" rows="2" maxlength="500"></textarea>
             </div>
             <div class="col-12">
-              <label class="form-label">Hidden detail (only admin sees it; used to check claims) *</label>
+              <label class="form-label">Hidden detail (only the admin sees it; used to check claims) *</label>
               <input id="itemHidden" class="form-control" placeholder="e.g. wallpaper is a cat, scratch on the back" maxlength="200">
             </div>
             <div class="col-12">

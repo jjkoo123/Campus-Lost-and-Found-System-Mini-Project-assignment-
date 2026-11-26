@@ -147,6 +147,25 @@ begin
     end if;
 end $$;
 
+-- 4b. Found items (Member C): students can turn in found items + extra columns
+alter table category add column if not exists description text;
+alter table location add column if not exists latitude double precision;
+alter table location add column if not exists longitude double precision;
+
+drop policy if exists "student turns in found item" on found_item;
+create policy "student turns in found item" on found_item for insert to authenticated
+    with check (created_by = auth.uid() and status = 'Available');
+drop policy if exists "finder adds secret for own item" on found_item_secret;
+create policy "finder adds secret for own item" on found_item_secret for insert to authenticated
+    with check (exists (select 1 from found_item f
+                        where f.id = found_item_id and f.created_by = auth.uid()));
+
+-- Found item photos: any logged-in user may upload into the "item-photo" bucket
+drop policy if exists "logged-in users upload item photos" on storage.objects;
+create policy "logged-in users upload item photos" on storage.objects for insert to authenticated
+    with check (bucket_id = 'item-photo');
+
+
 -- 5. Admin account: give the admin login an Admin profile.
 --    The login itself must be created first in:
 --    Authentication > Users > Add user  (admin@tarc.edu.my, tick "Auto Confirm User")

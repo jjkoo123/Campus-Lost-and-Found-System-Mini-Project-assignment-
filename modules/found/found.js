@@ -4,10 +4,11 @@ let isAdmin = false;
 let allItems = [];
 let modal = null;
 
-function notify(type, message) {
-  const msgType = type === "danger" ? "error" : type;
-  if (typeof showMessage === "function" && document.getElementById("alertBox")) {
-    showMessage("alerBox",type, message);
+// type: "danger" or "success". boxId: where to show it (default = top of the page)
+function notify(type, message, boxId = "alertBox") {
+  const msgType = type === "danger" ? "error" : "success";
+  if (typeof showMessage === "function" && document.getElementById(boxId)) {
+    showMessage(boxId, msgType, message);
     return;
   }
   if (type === "danger") {
@@ -34,7 +35,8 @@ function safeEscape(str) {
 
   isAdmin = me.role === "Admin";
   const addBtn = document.getElementById("addBtn");
-  if (addBtn && isAdmin) addBtn.classList.remove("d-none");
+  if (addBtn) addBtn.classList.remove("d-none");          // students and admin can turn in a found item
+  if (!isAdmin) document.getElementById("statusGroup")?.classList.add("d-none");   // new items are always Available
 
   const modalEl = document.getElementById("itemModal");
   if (modalEl && typeof bootstrap !== "undefined") {
@@ -150,6 +152,7 @@ function render() {
 /* CREATE / UPDATE */
 function openAdd() {
   document.getElementById("itemForm").reset();
+  if (typeof clearMessage === "function") clearMessage("formMsg");
   document.getElementById("itemId").value = "";
   document.getElementById("modalTitle").textContent = "Add found item";
   document.getElementById("itemDate").value = new Date().toISOString().split("T")[0];
@@ -160,6 +163,7 @@ async function openEdit(id) {
   const i = allItems.find(x => x.id === id);
   if (!i) return;
 
+  if (typeof clearMessage === "function") clearMessage("formMsg");
   document.getElementById("modalTitle").textContent = "Edit found item";
   document.getElementById("itemId").value = i.id;
   document.getElementById("itemName").value = i.item_name || "";
@@ -187,38 +191,35 @@ async function openEdit(id) {
 
 document.getElementById("itemForm").addEventListener("submit", async e => {
   e.preventDefault();
-  console.log("1. submit start", { isAdmin, me });
-
-  if (!isAdmin) {
-    notify("danger", "Only Admin can add or edit found items.");
-    return;
-  }
 
   const id = document.getElementById("itemId").value;
+  if (id && !isAdmin) {
+    notify("danger", "Only the admin can edit found items.", "formMsg");
+    return;
+  }
   const v = k => (document.getElementById(k)?.value || "").trim();
   const file = document.getElementById("itemPhoto")?.files?.[0];
   const todayStr = new Date().toISOString().split("T")[0];
 
   // ---- input validation ----
-  if (!v("itemName")) return notify("danger", "Item name is required.");
-  if (!v("itemCategory")) return notify("danger", "Please choose a category.");
-  if (!v("itemLocation")) return notify("danger", "Please choose the location found.");
-  if (!v("itemDate")) return notify("danger", "Date found is required.");
-  if (v("itemDate") > todayStr) return notify("danger", "Date found cannot be in the future.");
-  if (!v("itemDesc")) return notify("danger", "Description is required.");
-  if (!v("itemHidden")) return notify("danger", "Hidden detail is required so claims can be verified.");
-  if (!v("itemStorage")) return notify("danger", "Storage place is required.");
+  if (!v("itemName")) return notify("danger", "Item name is required.", "formMsg");
+  if (!v("itemCategory")) return notify("danger", "Please choose a category.", "formMsg");
+  if (!v("itemLocation")) return notify("danger", "Please choose the location found.", "formMsg");
+  if (!v("itemDate")) return notify("danger", "Date found is required.", "formMsg");
+  if (v("itemDate") > todayStr) return notify("danger", "Date found cannot be in the future.", "formMsg");
+  if (!v("itemDesc")) return notify("danger", "Description is required.", "formMsg");
+  if (!v("itemHidden")) return notify("danger", "Hidden detail is required so claims can be verified.", "formMsg");
+  if (!v("itemStorage")) return notify("danger", "Storage place is required.", "formMsg");
 
   if (file) {
     if (!["image/jpeg", "image/png"].includes(file.type)) {
-      return notify("danger", "Photo must be a JPG or PNG file.");
+      return notify("danger", "Photo must be a JPG or PNG file.", "formMsg");
     }
     if (file.size > 2 * 1024 * 1024) {
-      return notify("danger", "Photo must be smaller than 2 MB.");
+      return notify("danger", "Photo must be smaller than 2 MB.", "formMsg");
     }
   }
 
-  console.log("2. validation passed", { id, hasFile: !!file });
 
   const existingItem = id ? allItems.find(x => String(x.id) === String(id)) : null;
   const row = {
@@ -227,18 +228,16 @@ document.getElementById("itemForm").addEventListener("submit", async e => {
     location_id: Number(v("itemLocation")),
     date_found: v("itemDate"),
     description: v("itemDesc"),
-    status: v("itemStatus") || "Available",
+    status: isAdmin ? (v("itemStatus") || "Available") : "Available",
     photo_url: existingItem?.photo_url || null
   };
 
   if (file) {
     const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const path = `${Date.now()}_${cleanName}`;
-    console.log("3. uploading photo", path);
     const up = await sb.storage.from("item-photo").upload(path, file);
-    console.log("4. upload result", up);
     if (up.error) {
-      return notify("danger", "Photo upload failed: " + up.error.message);
+      return notify("danger", "Photo upload failed: " + up.error.message, "formMsg");
     }
     row.photo_url = sb.storage.from("item-photo").getPublicUrl(path).data.publicUrl;
   }
@@ -246,10 +245,8 @@ document.getElementById("itemForm").addEventListener("submit", async e => {
   let itemId = id ? Number(id) : null;
   let error = null;
 
-  console.log("5. saving found_item", { id, itemId, row });
   if (id) {
     const res = await sb.from("found_item").update(row).eq("id", itemId);
-    console.log("6. update result", res);
     error = res.error;
   } else {
     const res = await sb
@@ -257,34 +254,32 @@ document.getElementById("itemForm").addEventListener("submit", async e => {
       .insert({ ...row, created_by: me.id })
       .select("id")
       .single();
-    console.log("6. insert result", res);
     error = res.error;
     itemId = res.data?.id;
   }
 
   if (error) {
-    return notify("danger", error.message);
+    return notify("danger", friendlyError(error), "formMsg");
   }
 
-  console.log("7. saving found_item_secret", { itemId });
-  const sec = await sb
-    .from("found_item_secret")
-    .upsert({
-      found_item_id: itemId,
-      hidden_detail: v("itemHidden"),
-      storage_place: v("itemStorage")
-    });
-  console.log("8. secret result", sec);
+  const secretRow = {
+    found_item_id: itemId,
+    hidden_detail: v("itemHidden"),
+    storage_place: v("itemStorage")
+  };
+  const sec = id
+    ? await sb.from("found_item_secret").upsert(secretRow)
+    : await sb.from("found_item_secret").insert(secretRow);
 
   if (sec.error) {
-    return notify("danger", "Saved item, but failed to save secret details: " + sec.error.message);
+    return notify("danger", "Saved item, but failed to save secret details: " + sec.error.message, "formMsg");
   }
 
-  console.log("9. finishing UI updates");
-  notify("success", id ? "Item updated." : "Item added.");
+  notify("success", id ? "Item updated."
+    : isAdmin ? "Item added."
+    : "Thank you! Your found item has been recorded. Please hand it to the Security Office.");
   if (modal) modal.hide();
   await loadItems();
-  console.log("10. done");
 });
 
 /* DELETE */
