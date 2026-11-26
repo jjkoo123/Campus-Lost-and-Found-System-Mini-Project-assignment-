@@ -90,8 +90,9 @@ function showReports() {
             ? "<img src='" + escapeHtml(r.photo_url) + "' alt='Item photo'>"
             : "<i class='bi bi-image'></i>";
 
+        // Only the admin marks a report as Found (Admin > Lost Reports)
         const markBtn = isLost
-            ? "<button class='btn btn-success btn-sm w-100 mb-2 found-btn' data-id='" + r.id + "'><i class='bi bi-check-circle'></i> Mark as Found</button>"
+            ? "<div class='small text-muted mb-2'>The Security Office will mark this report as Found when your item is returned.</div>"
             : "";
 
         return "<div class='ll-claim-card " + cardClass + "'>" +
@@ -140,25 +141,7 @@ document.getElementById("reset-btn").addEventListener("click", () => {
 });
 
 document.getElementById("report-list").addEventListener("click", async (e) => {
-    const foundBtn = e.target.closest(".found-btn");
     const deleteBtn = e.target.closest(".delete-btn");
-
-    if (foundBtn) {
-        const id = foundBtn.dataset.id;
-        if (!confirm("Mark " + displayId("LR", id) + " as Found?")) return;
-
-        const { error } = await sb.from("lost_report")
-            .update({ status: "Found" })
-            .eq("id", id)
-            .eq("user_id", me.id);
-
-        if (error) {
-            showMessage("message", "error", friendlyError(error));
-            return;
-        }
-        showMessage("message", "success", displayId("LR", id) + " marked as Found!");
-        loadMyReports();
-    }
 
     if (deleteBtn) {
         const id = deleteBtn.dataset.id;

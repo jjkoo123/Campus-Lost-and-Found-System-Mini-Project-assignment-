@@ -245,6 +245,9 @@ create policy "owner creates lost report" on lost_report for insert to authentic
     with check (user_id = auth.uid());
 create policy "owner edits lost report" on lost_report for update to authenticated
     using (user_id = auth.uid()) with check (user_id = auth.uid());
+-- Only the admin marks a report as Found (Admin > Lost Reports)
+create policy "admin updates lost report status" on lost_report for update to authenticated
+    using (is_admin()) with check (is_admin());
 create policy "owner deletes lost report" on lost_report for delete to authenticated
     using (user_id = auth.uid());
 

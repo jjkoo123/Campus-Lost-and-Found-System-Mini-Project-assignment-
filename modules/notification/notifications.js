@@ -16,15 +16,16 @@ function formatDateTime(value) {
 }
 
 async function loadNotifications() {
-    let query = sb.from("notification")
-        .select("*")
-        .order("created_at", { ascending: false });
-
+    // Own notifications + announcements (user_id empty), for students and admin
     const { data, error } = await sb.from("notification")
         .select("*")
         .or("user_id.eq." + me.id + ",user_id.is.null")
         .order("created_at", { ascending: false });
 
+    if (error) {
+        showMessage("message", "error", friendlyError(error));
+        return;
+    }
     notifications = data;
     showCounts();
     showNotifications();
@@ -61,7 +62,8 @@ function showNotifications() {
         const style = TYPE_STYLE[n.type] || TYPE_STYLE.General;
         const isMine = n.user_id === me.id;
         const canDelete = isMine || (me.role === "Admin" && n.user_id === null);
-        const unreadClass = !n.is_read ? "border-start border-4 border-primary bg-white" : "bg-light";
+        const isUnread = isMine && !n.is_read;   // announcements are shared, so they have no read state
+        const unreadClass = isUnread ? "border-start border-4 border-primary bg-white" : "bg-light";
 
         const readBtn = isMine
             ? "<button class='btn btn-outline-primary btn-sm toggle-read-btn' data-id='" + n.id + "' data-read='" + n.is_read + "'>" +
@@ -74,7 +76,7 @@ function showNotifications() {
               "<i class='bi bi-trash'></i> Delete</button>"
             : "";
 
-        const unreadDot = !n.is_read
+        const unreadDot = isUnread
             ? "<span class='badge bg-warning text-dark ms-1'>Unread</span>"
             : "";
 

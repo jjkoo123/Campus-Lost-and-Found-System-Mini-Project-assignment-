@@ -155,12 +155,18 @@ document.getElementById("report-list").addEventListener("click", async (e) => {
 
     if (!confirm("Change " + displayId("LR", id) + " status to " + nextStatus + "?")) return;
 
-    const { error } = await sb.from("lost_report")
+    const { data: updated, error } = await sb.from("lost_report")
         .update({ status: nextStatus })
-        .eq("id", id);
+        .eq("id", id)
+        .select("id");
 
     if (error) {
         showMessage("message", "error", friendlyError(error));
+        return;
+    }
+    // Nothing changed = the database did not allow it (or the report was deleted)
+    if (!updated || updated.length === 0) {
+        showMessage("message", "error", "Could not update " + displayId("LR", id) + ". Please refresh and try again.");
         return;
     }
 

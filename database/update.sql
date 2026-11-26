@@ -166,6 +166,12 @@ create policy "logged-in users upload item photos" on storage.objects for insert
     with check (bucket_id = 'item-photo');
 
 
+-- 4c. Lost reports (Member B): the admin marks a report as Found
+drop policy if exists "admin updates lost report status" on lost_report;
+create policy "admin updates lost report status" on lost_report for update to authenticated
+    using (is_admin()) with check (is_admin());
+
+
 -- 5. Admin account: give the admin login an Admin profile.
 --    The login itself must be created first in:
 --    Authentication > Users > Add user  (admin@tarc.edu.my, tick "Auto Confirm User")
