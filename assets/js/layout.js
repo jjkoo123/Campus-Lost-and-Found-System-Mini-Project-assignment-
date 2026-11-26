@@ -34,14 +34,17 @@ const NAV_LINKS = {
         { text: "Dashboard", href: "index.html", icon: "house" },
         { text: "My Claims", href: "modules/claim/my-claims.html", icon: "patch-check" },
         { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
-        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" },
+        { text: "Found Items", href: "modules/found/items.html", icon: "box" },
     ],
     Admin: [
         { text: "Dashboard", href: "index.html", icon: "house" },
         { text: "Claims", href: "modules/claim/admin-claims.html", icon: "clipboard-check" },
         { text: "Users", href: "modules/user/admin-users.html", icon: "people" },
         { text: "Chat", href: "modules/chat/chat.html", icon: "chat-dots" },
-        { text: "My Profile", href: "modules/user/profile.html", icon: "person" }
+        { text: "My Profile", href: "modules/user/profile.html", icon: "person" },
+        { text: "Found Items", href: "modules/found/items.html", icon: "box" },
+        { text: "Categories & Locations", href: "modules/location/locations.html", icon: "geo-alt" }
     ]
 };
 
