@@ -131,7 +131,7 @@ function render() {
             <p class="small text-muted mb-1">
               ${safeEscape(i.category?.name || "—")} &middot;
               ${safeEscape(i.location?.name || "—")} &middot;
-              ${safeEscape(i.date_found)}
+              ${safeEscape(formatDate(i.date_found))}
             </p>
             <p class="small mb-0">${safeEscape(i.description || "")}</p>
           </div>
